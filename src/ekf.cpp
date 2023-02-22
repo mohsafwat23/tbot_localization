@@ -13,13 +13,12 @@ EKF::EKF()
     Q = (Eigen::Matrix2d() << 0.1*0.1,0.0,0.0,0.1*0.1).finished();
 
     // Camera Measurement Noise Covariance
-    R = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.1*0.1).finished();
+    R_cam = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.1*0.1).finished();
 
-    // TODO: Add IMU Covariance
-    
+    // Gyro Noise Covariance
+    R_gyr = 0.005;
+
     I = Eigen::Matrix3d::Identity();
-
-
 }
 
 void EKF::predict()
@@ -49,8 +48,12 @@ void EKF::predict()
     sigma = J_fx*sigma*J_fx.transpose() + J_fu*Q*J_fu.transpose();
 }
 
-void EKF::update(std::vector<double> landmark, const double dist, const double bearing)
+void EKF::updateCam(std::vector<double> landmark, const double dist, const double bearing)
 {
+    // Measurement Model:
+    // dist = sqrt((x-xlandmark)^2 + (y-ylandmark)^2)
+    // alpha = tan^-1((ylandmark - y)/(xlandmark - x)) - theta
+
     measurement(0) = dist;
     measurement(1) = bearing;
     measurement_hat(0) = sqrt(pow((state(0) - landmark[0]),2) + pow((state(1) - landmark[1]),2));
@@ -65,18 +68,41 @@ void EKF::update(std::vector<double> landmark, const double dist, const double b
             (-state(1)+landmark[1])/pow(measurement_hat(0),2),             (state(0)-landmark[0])/pow(measurement_hat(0),2),              -1.0;
 
     //measurement noise covariance
-    S_obs = J_H*sigma*J_H.transpose() + R;
+    S_obs_cam = J_H*sigma*J_H.transpose() + R_cam;
 
     //Kalman gain
-    K = sigma*J_H.transpose()*S_obs.inverse();
+    K_cam = sigma*J_H.transpose()*(S_obs_cam).inverse();
 
     //update state
-    state = state + K*(measurement - measurement_hat);
+    state = state + K_cam*(measurement - measurement_hat);
 
     //update covarance
-    sigma = (I - K*J_H)*sigma;
+    sigma = (I - K_cam*J_H)*sigma;
 
 }
+
+void EKF::updateIMU(double omega)
+{
+    // double omega_hat = state(2)*dt;
+
+    // Measurement Model:
+    // [omega] = [0 0 1/dt]*[x y theta]^T
+
+    H_gyr << 0, 0, 1/dt;
+
+    //measurement noise covariance: CHECK THIS
+    S_obs_gyr = H_gyr*sigma*H_gyr.transpose() + R_gyr;
+
+    // Kalman gain
+    K_gyr = sigma*H_gyr.transpose()*(1/S_obs_gyr);
+
+    //update state
+    state = state + K_gyr*(omega - (H_gyr*state)(0));
+
+    //update covarance
+    sigma = (I - K_gyr*H_gyr)*sigma;
+}
+
 
 void EKF::setEncoders(const float encl, const float encr)
 {

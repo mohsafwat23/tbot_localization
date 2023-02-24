@@ -15,6 +15,9 @@
 class Cam_Node {
     public:
         Cam_Node(ros::NodeHandle *nh);
+
+        //April Tag length
+        double markerLength;
     
     private:
         // get raw image data
@@ -26,9 +29,6 @@ class Cam_Node {
 
         // Multiarray width
         const int W = 3;
-
-        //April Tag length
-        const float markerLength = 0.1778;
 
         const std::string OPENCV_WINDOW = "Image window";
 

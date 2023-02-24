@@ -1,0 +1,5 @@
+<launch>
+    <rosparam file="$(find tbot_localization)/config/landmarks_params.yaml" />
+    <node name="ekf_node" pkg="tbot_localization" type="ekf_node" output="screen"/>
+    <node name="cam_node" pkg="tbot_localization" type="cam_node" output="screen"/>
+</launch>

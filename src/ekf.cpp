@@ -5,7 +5,7 @@ EKF::EKF()
     Width = 0.4;
     dt = 0.01;
     state = Eigen::Vector3d::Zero();
-    u_enc = Eigen::Vector2d::Zero();
+    odom_rob = Eigen::Vector2d::Zero();
     sigma = Eigen::Matrix3d::Zero();
     //landmark = Eigen::Vector2d::Zero();
 
@@ -16,33 +16,37 @@ EKF::EKF()
     R_cam = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.1*0.1).finished();
 
     // Gyro Noise Covariance
-    R_gyr = 0.005;
+    R_imu = 0.005;
 
     I = Eigen::Matrix3d::Identity();
 }
 
-void EKF::predict()
+void EKF::predict(const double dt_loop)
 {
+    dt = dt_loop;
     //prior motion model
+    double v = odom_rob(0);
+    double omega = odom_rob(1);
+
     //x position
-    state(0) += cos(state(2))*dt*((u_enc(0)+u_enc(1))/2.0);
+    state(0) += v*dt*cos(state(2));             // x_t+1 = x_t + v*dt*cos(theta)
     //y position
-    state(1) += sin(state(2))*dt*((u_enc(0)+u_enc(1))/2.0);
+    state(1) += v*dt*sin(state(2));             // y_t+1 = y_t + v*dt*sin(theta)
     //theta
-    state(2) += dt*((u_enc(1)-u_enc(0))/Width);
+    state(2) += omega*dt;                       // theta_t_1 = theta_t + omega*dt
 
     //this handles angle wrapping
     state(2) = atan2(sin(state(2)), cos(state(2)));
 
     //motion model Jacobian
-    J_fx << 1.0, 0.0, -sin(state(2))*dt*((u_enc(0)+u_enc(1))/2.0),
-            0.0, 1.0,  cos(state(2))*dt*((u_enc(0)+u_enc(1))/2.0),
-            0.0, 0.0, 1.0;
+    J_fx << 1.0, 0.0, -v*dt*sin(state(2))*omega,            //     dx_{t+1}/dx_t       dx_{t+1}/dy_t      dx_{t+1}/dtheta_t
+            0.0, 1.0,  v*dt*cos(state(2))*omega,            //     dy_{t+1}/dy_t       dy_{t+1}/dy_t      dy_{t+1}/dtheta_t
+            0.0, 0.0,                       1.0;            // dtheta_{t+1}/dx_t   dtheta_{t+1}/dy_t  dtheta_{t+1}/dtheta_t
 
     //control model Jacobian 
-    J_fu << cos(state(2))*dt/2.0, cos(state(2))*dt/2.0,
-            sin(state(2))*dt/2.0, sin(state(2))*dt/2.0,
-            -dt/Width                ,                  dt/Width;
+    J_fu << cos(state(2))*dt, 0.0,                          //     dx_{t+1}/dv_t           dx_{t+1}/domega_t
+            sin(state(2))*dt, 0.0,                          //     dy_{t+1}/dv_t           dy_{t+1}/domega_t
+            0.0             ,  dt;                          //     dtheta_{t+1}/dv_t       dtheta_{t+1}/domega_t
 
     //prior covariance 
     sigma = J_fx*sigma*J_fx.transpose() + J_fu*Q*J_fu.transpose();
@@ -81,33 +85,33 @@ void EKF::updateCam(std::vector<double> landmark, const double dist, const doubl
 
 }
 
-void EKF::updateIMU(double omega)
+void EKF::updateIMU()
 {
-    // double omega_hat = state(2)*dt;
-
     // Measurement Model:
-    // [omega] = [0 0 1/dt]*[x y theta]^T
+    // [theta] = [0 0 1]*[x y theta]^T
 
-    H_gyr << 0, 0, 1/dt;
+    H_imu << 0.0, 0.0, 1.0;
+    
 
     //measurement noise covariance: CHECK THIS
-    S_obs_gyr = H_gyr*sigma*H_gyr.transpose() + R_gyr;
+    S_obs_imu = H_imu*sigma*H_imu.transpose() + R_imu;
+
 
     // Kalman gain
-    K_gyr = sigma*H_gyr.transpose()*(1/S_obs_gyr);
+    K_imu = sigma*H_imu.transpose()*(1/S_obs_imu);
 
     //update state
-    state = state + K_gyr*(omega - (H_gyr*state)(0));
+    state = state + K_imu*(theta_imu - (H_imu*state)(0));
 
     //update covarance
-    sigma = (I - K_gyr*H_gyr)*sigma;
+    sigma = (I - K_imu*H_imu)*sigma;
 }
 
 
-void EKF::setEncoders(const float encl, const float encr)
+void EKF::setOdom(const float v_rob, const float omega_rob)
 {
-    u_enc(0) = encl;
-    u_enc(1) = encr;
+    odom_rob(0) = v_rob;
+    odom_rob(1) = omega_rob;
 }
 
 void EKF::setDt(const double tf, const double ti)
@@ -118,10 +122,10 @@ void EKF::setDt(const double tf, const double ti)
     }
 }
 
-Eigen::VectorXd EKF::getEncoders()
-{
-    return u_enc;
-}
+// Eigen::VectorXd EKF::getEncoders()
+// {
+//     return u_enc;
+// }
 
 Eigen::VectorXd EKF::getState()
 {

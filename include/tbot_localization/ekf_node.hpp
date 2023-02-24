@@ -12,13 +12,31 @@
 
 
 
-class EKF_Node {
+class EKF_Node: public EKF {
     public:
         EKF_Node(ros::NodeHandle *nh);
 
+        double tnowIMU;
+
+        double tprevIMU;
+
+        double tnowOdom;
+
+        double tprevOdom;
+
+        bool cam_recieved = false;
+
+        // Number of Landmarks observed
+        int nlandmarks;
+
+        int W;
+
+        std::vector<float> cam_data;
+
+
     private:
         // Call ekf class
-        EKF ekf;
+        // EKF ekf;
 
         // Encoder Data
         void odom_callback(const nav_msgs::Odometry::ConstPtr& msg); 
@@ -29,13 +47,12 @@ class EKF_Node {
         // Observation data
         void cam_callback(const std_msgs::Float32MultiArray::ConstPtr& msg);
 
-
         // Publish state estimate
         void publisher_callback();
 
         //Landmarks from YAML
-        std::vector<double> lmP[12];   //landmark position
-        std::vector<double> lmR[12];  //landmark orientation
+        // std::vector<double> lmP[7];   //landmark position
+        // std::vector<double> lmR[7];  //landmark orientation
 
         //ROS Node stuff
         ros::Subscriber odom_subscriber;

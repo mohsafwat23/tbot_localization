@@ -1,6 +1,7 @@
 #ifndef EKF_h
 #define EKF_h
 
+#include <iostream>
 #include <eigen3/Eigen/Dense>
 #include <math.h>
 #include <vector>
@@ -9,28 +10,30 @@ class EKF {
     public:
         EKF();
 
-        void predict();
+        void predict(const double dt_loop);
 
         void updateCam(std::vector<double> landmark, const double dist, const double bearing);
 
-        void updateIMU(double omega);
+        void updateIMU();
 
-        void setEncoders(const float encl, const float encr);
+        void setOdom(const float encl, const float encr);
 
         void setDt(const double tf, const double ti);
 
-        Eigen::VectorXd getEncoders();
+        // Eigen::VectorXd getEncoders();
         
         Eigen::VectorXd getState();
 
         Eigen::MatrixXd getCovariance();
 
+        Eigen::Vector2d odom_rob;  
+
+        double theta_imu;
 
     private:
 
         double dt;           //time
         float Width;
-        Eigen::Vector2d u_enc;    
         Eigen::Vector3d state;    //x,y,theta
         Eigen::Matrix3d sigma;
         
@@ -43,7 +46,7 @@ class EKF {
         Eigen::Matrix3d I; 
 
         // Measurement noise for Gyroscope
-        float R_gyr;
+        double R_imu;
         
         // motion model Jacobian 
         Eigen::Matrix3d J_fx; 
@@ -55,7 +58,7 @@ class EKF {
         Eigen::Matrix<double, 2,3> J_H; 
 
         // IMU Observation model
-        Eigen::Matrix<double, 1,3> H_gyr;
+        Eigen::Matrix<double, 1,3> H_imu;
 
         Eigen::Vector2d measurement;    //measurement
         Eigen::Vector2d measurement_hat;    //predicted measurement
@@ -64,14 +67,15 @@ class EKF {
 
         // Kalman Gains
         Eigen::Matrix<double, 3,2> K_cam; //= Eigen::Matrix<double, 3,2>::Zero(); //Kalman gain
-        Eigen::Matrix<double, 3,1> K_gyr;
+        Eigen::Matrix<double, 3,1> K_imu;
 
 
         // Camera measurement noise covariance
         Eigen::Matrix2d S_obs_cam; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
 
         // Camera measurement noise covariance
-        double S_obs_gyr; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
+        double S_obs_imu; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
+
 
 };
 

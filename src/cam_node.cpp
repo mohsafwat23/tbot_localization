@@ -80,7 +80,16 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "cam_node");
     ros::NodeHandle nh;
-    Cam_Node jc = Cam_Node(&nh);
+    Cam_Node camnode = Cam_Node(&nh);
+
+    if (nh.getParam("/params/ros__parameters/markerlength", camnode.markerLength))
+    {
+        ROS_INFO("Got camera width param");
+    }
+    else 
+    {
+        ROS_ERROR("Failed to get camera width param");
+    }
 
     while(ros::ok())
     {

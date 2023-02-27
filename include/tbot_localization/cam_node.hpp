@@ -34,11 +34,11 @@ class Cam_Node {
 
 
         cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) 
-                            << 921.9938565545156, 0.0,             480.5, 
-                                0.0,            921.9938565545156, 360.5, 
+                            << 909.74712849, 0.0,             661.62344023, 
+                                0.0,            907.00789333, 390.19897635, 
                                 0.0,              0.0,              1.0);
 
-        cv::Mat distCoeffs = (cv::Mat_<double>(1,5) << 0.0,0.0,0.0,0.0,0.0);
+        cv::Mat distCoeffs = (cv::Mat_<double>(1,5) << 0.15587604, -0.35818478, 0.01418107, 0.00112367, 0.222139);
 
         //ROS Node stuff
         ros::Subscriber img_raw_sub;

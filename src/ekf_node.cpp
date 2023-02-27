@@ -3,14 +3,14 @@
 
 EKF_Node::EKF_Node(ros::NodeHandle *nh) 
 {
+    EKF();
     
     odom_subscriber = nh->subscribe("/odom", 10, &EKF_Node::odom_callback, this);
 
     imu_subscriber = nh->subscribe("/imu", 10, &EKF_Node::imu_callback, this);
 
-    EKF();
-
     cam_subscriber = nh->subscribe("/cam_data", 10, &EKF_Node::cam_callback, this);
+
     
 };
 
@@ -30,7 +30,7 @@ void EKF_Node::imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     double qw = msg->orientation.w;
 
     theta_imu = atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz));
-    // std::cout << theta_imu << "\n";
+    std::cout << theta_imu << "\n";
 
     // tnowIMU = double(msg->header.stamp.sec) + double(msg->header.stamp.nsec)*1e-9;
 
@@ -78,12 +78,15 @@ int main(int argc, char **argv)
 
         
     int vec_size;
+    ros::Publisher pose_marker_pub = nh.advertise<visualization_msgs::Marker>("/robot_marker_pose", 10);
+
+    visualization_msgs::Marker pose_marker;
 
     while(ros::ok())
     {
         ros::spinOnce();
         ekfN.predict(1.0/100.0);
-        ekfN.updateIMU();
+        //ekfN.updateIMU();
         
         //check if camera data is coming
         if(ekfN.cam_recieved)
@@ -106,6 +109,28 @@ int main(int argc, char **argv)
             }
         
         }
+
+        pose_marker.header.frame_id = "odom";
+        pose_marker.header.stamp = ros::Time::now();
+        pose_marker.ns = "tbot_marker";
+        pose_marker.id = 1;
+        pose_marker.type = visualization_msgs::Marker::ARROW;
+
+        pose_marker.scale.x = 0.8;
+        pose_marker.scale.y = 0.05;
+        pose_marker.scale.z = 0.05;
+        pose_marker.color.a = 1.0; // Don't forget to set the alpha!
+        pose_marker.color.r = 1.0;
+        pose_marker.color.g = 0.0;
+        pose_marker.color.b = 0.0;
+        pose_marker.pose.position.x = ekfN.getState()(0);
+        pose_marker.pose.position.y = ekfN.getState()(1);
+        pose_marker.pose.position.z = 0.0;
+        pose_marker.pose.orientation.w = 1.0;
+        pose_marker.pose.orientation.x = 0.0;
+        pose_marker.pose.orientation.y = 0.0;
+        pose_marker.pose.orientation.z = 0.0;
+        pose_marker_pub.publish(pose_marker);
   
         // std::cout << ekfN.getState() << "\n";
         r.sleep();

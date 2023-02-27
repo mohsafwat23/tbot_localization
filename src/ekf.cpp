@@ -55,7 +55,7 @@ void EKF::predict(const double dt_loop)
 void EKF::updateCam(std::vector<double> landmark, const double dist, const double bearing)
 {
     // Measurement Model:
-    // dist = sqrt((x-xlandmark)^2 + (y-ylandmark)^2)
+    // dist = sqrt((x-xlandmark)^2 + (y-ylandmark)^2 + (z - zlandmark)^2)
     // alpha = tan^-1((ylandmark - y)/(xlandmark - x)) - theta
 
     measurement(0) = dist;

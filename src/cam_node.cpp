@@ -54,9 +54,10 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
             //float angle = std::atan2(x, z); //check this! for robot heading
 
             float y = -tvec[0];  //left and right
-            float x = tvec[2];  //depth into camera
+            float x = tvec[2] - Zoffset;  //depth into camera .... offset is relative to coordinate frame of april tag
+            float z = tvec[1] - Yoffset;    // .... offset is relative to coordinate frame of april tag
 
-            float dist = sqrt(pow(x,2) + pow(y,2));
+            float dist = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
             float angle = std::atan2(y, x);
             vec[W*i] = id;
             vec[W*i + 1] = dist;

@@ -20,6 +20,11 @@ class Cam_Node {
         double markerLength;
     
     private:
+
+        const float Zoffset = 0.06;               // relative to coordinate frame of april tag
+
+        const float Yoffset = 0.053;               // relative to coordinate frame of april tag
+
         // get raw image data
         void img_raw_callback(const sensor_msgs::Image::ConstPtr& msg);
         

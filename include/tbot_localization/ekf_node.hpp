@@ -9,7 +9,7 @@
 #include "nav_msgs/Odometry.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "sensor_msgs/Imu.h"
-
+#include "visualization_msgs/Marker.h"
 
 
 class EKF_Node: public EKF {
@@ -58,7 +58,6 @@ class EKF_Node: public EKF {
         ros::Subscriber odom_subscriber;
         ros::Subscriber imu_subscriber;
         ros::Subscriber cam_subscriber;
-
         //Subscribe to encoder data
 };
 

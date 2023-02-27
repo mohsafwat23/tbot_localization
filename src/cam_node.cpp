@@ -2,7 +2,7 @@
 
 Cam_Node::Cam_Node(ros::NodeHandle *nh) 
 {
-    
+    cam_data_pub = nh->advertise<std_msgs::Float32MultiArray>("/cam_data", 10);
     img_raw_sub = nh->subscribe("/camera/color/image_raw", 10, &Cam_Node::img_raw_callback, this);
     
 };
@@ -66,6 +66,7 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
         }
 
         ms.data = vec;
+        cam_data_pub.publish(ms);
     }
 
     // cv::imshow(OPENCV_WINDOW, imageCopy);

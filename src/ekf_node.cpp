@@ -30,7 +30,7 @@ void EKF_Node::imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
     double qw = msg->orientation.w;
 
     theta_imu = atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz));
-    std::cout << theta_imu << "\n";
+    // std::cout << theta_imu << "\n";
 
     // tnowIMU = double(msg->header.stamp.sec) + double(msg->header.stamp.nsec)*1e-9;
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
         }
     }
 
-    ros::Rate r(100);     // 100 hz
+    ros::Rate r(30.0);     // 100 hz
 
         
     int vec_size;
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     while(ros::ok())
     {
         ros::spinOnce();
-        ekfN.predict(1.0/100.0);
+        ekfN.predict(1.0/30.0);
         //ekfN.updateIMU();
         
         //check if camera data is coming

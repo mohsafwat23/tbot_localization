@@ -46,6 +46,7 @@ class Cam_Node {
         cv::Mat distCoeffs = (cv::Mat_<double>(1,5) << 0.15587604, -0.35818478, 0.01418107, 0.00112367, 0.222139);
 
         //ROS Node stuff
+        ros::Publisher cam_data_pub;
         ros::Subscriber img_raw_sub;
 };
 

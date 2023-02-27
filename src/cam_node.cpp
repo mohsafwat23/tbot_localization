@@ -67,8 +67,8 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
         ms.data = vec;
     }
 
-    cv::imshow(OPENCV_WINDOW, imageCopy);
-    cv::waitKey(1);
+    // cv::imshow(OPENCV_WINDOW, imageCopy);
+    // cv::waitKey(1);
 
 
 }

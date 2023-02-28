@@ -39,8 +39,6 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
         cv::aruco::estimatePoseSingleMarkers(corners, markerLength, cameraMatrix, distCoeffs, rvecs, tvecs);
         for(int i=0; i<size; i++)
         {
-            std::cout << i << "\n";
-
             //message.id.data.push_back(ids[i]);
             //ms.data.push_back(ids[i]);
             //ms.data.push_back(5.0);
@@ -59,6 +57,9 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
 
             float dist = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
             float angle = std::atan2(y, x);
+
+            std::cout << dist << "/n";
+            
             vec[W*i] = id;
             vec[W*i + 1] = dist;
             vec[W*i + 2] = angle;

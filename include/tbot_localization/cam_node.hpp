@@ -37,13 +37,12 @@ class Cam_Node {
 
         const std::string OPENCV_WINDOW = "Image window";
 
-
         cv::Mat cameraMatrix = (cv::Mat_<double>(3, 3) 
-                            << 909.74712849, 0.0,             661.62344023, 
-                                0.0,            907.00789333, 390.19897635, 
+                            << 610.3250122070312, 0.0,             331.69219970703125, 
+                                0.0,            610.5338134765625, 239.29869079589844, 
                                 0.0,              0.0,              1.0);
 
-        cv::Mat distCoeffs = (cv::Mat_<double>(1,5) << 0.15587604, -0.35818478, 0.01418107, 0.00112367, 0.222139);
+        cv::Mat distCoeffs = (cv::Mat_<double>(1,5) << 0.0, 0.0, 0.0, 0.0, 0.0);
 
         //ROS Node stuff
         ros::Publisher cam_data_pub;

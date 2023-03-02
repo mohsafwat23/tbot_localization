@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   cv_bridge
   visualization_msgs
+  tf2_msgs
   #OpenCV
 )
 
@@ -115,7 +116,7 @@ catkin_package(
   INCLUDE_DIRS include
   #LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs  visualization_msgs
-  std_msgs nav_msgs cv_bridge #OpenCV
+  std_msgs nav_msgs cv_bridge tf2_msgs#OpenCV
   #DEPENDS system_lib
 )
 

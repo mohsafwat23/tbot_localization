@@ -84,6 +84,8 @@ int main(int argc, char **argv)
 
     while(ros::ok())
     {
+        tf2::Quaternion quat;
+
         ros::spinOnce();
         ekfN.predict(1.0/30.0);
         //ekfN.updateIMU();
@@ -110,6 +112,9 @@ int main(int argc, char **argv)
         
         }
 
+        quat.setRPY(0.0, 0.0, ekfN.getState()(2));
+        quat = quat.normalize();
+
         pose_marker.header.frame_id = "odom";
         pose_marker.header.stamp = ros::Time::now();
         pose_marker.ns = "tbot_marker";
@@ -126,10 +131,10 @@ int main(int argc, char **argv)
         pose_marker.pose.position.x = ekfN.getState()(0);
         pose_marker.pose.position.y = ekfN.getState()(1);
         pose_marker.pose.position.z = 0.0;
-        pose_marker.pose.orientation.w = 1.0;
-        pose_marker.pose.orientation.x = 0.0;
-        pose_marker.pose.orientation.y = 0.0;
-        pose_marker.pose.orientation.z = 0.0;
+        pose_marker.pose.orientation.w = quat.w();
+        pose_marker.pose.orientation.x = quat.x();
+        pose_marker.pose.orientation.y = quat.y();
+        pose_marker.pose.orientation.z = quat.z();
         pose_marker_pub.publish(pose_marker);
   
         // std::cout << ekfN.getState() << "\n";

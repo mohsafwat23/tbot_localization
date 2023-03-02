@@ -10,6 +10,7 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "sensor_msgs/Imu.h"
 #include "visualization_msgs/Marker.h"
+#include <tf2/LinearMath/Quaternion.h>
 
 
 class EKF_Node: public EKF {

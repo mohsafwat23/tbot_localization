@@ -43,7 +43,11 @@ class EKF_Node: public EKF {
         void odom_callback(const nav_msgs::Odometry::ConstPtr& msg); 
 
         // IMU Data
-        void imu_callback(const sensor_msgs::Imu::ConstPtr& msg);
+        // void imu_callback(const sensor_msgs::Imu::ConstPtr& msg);
+
+        // get angular velocity
+        void gyro_callback(const sensor_msgs::Imu::ConstPtr& msg);
+
 
         // Observation data
         void cam_callback(const std_msgs::Float32MultiArray::ConstPtr& msg);
@@ -57,7 +61,8 @@ class EKF_Node: public EKF {
 
         //ROS Node stuff
         ros::Subscriber odom_subscriber;
-        ros::Subscriber imu_subscriber;
+        // ros::Subscriber imu_subscriber;
+        ros::Subscriber gyro_subscriber;
         ros::Subscriber cam_subscriber;
         //Subscribe to encoder data
 };

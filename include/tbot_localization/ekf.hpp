@@ -14,7 +14,9 @@ class EKF {
 
         void updateCam(std::vector<double> landmark, const double dist, const double bearing);
 
-        void updateIMU();
+        //void updateIMU();
+
+        void updateGyro(const double dt_loop);
 
         void setOdom(const float encl, const float encr);
 
@@ -46,7 +48,8 @@ class EKF {
         Eigen::Matrix3d I; 
 
         // Measurement noise for Gyroscope
-        double R_imu;
+        // double R_imu;
+        double R_gyro;
         
         // motion model Jacobian 
         Eigen::Matrix3d J_fx; 
@@ -58,7 +61,9 @@ class EKF {
         Eigen::Matrix<double, 2,3> J_H; 
 
         // IMU Observation model
-        Eigen::Matrix<double, 1,3> H_imu;
+        // Eigen::Matrix<double, 1,3> H_imu;
+        Eigen::Matrix<double, 1,3> H_gyro;
+
 
         Eigen::Vector2d measurement;    //measurement
         Eigen::Vector2d measurement_hat;    //predicted measurement
@@ -67,14 +72,16 @@ class EKF {
 
         // Kalman Gains
         Eigen::Matrix<double, 3,2> K_cam; //= Eigen::Matrix<double, 3,2>::Zero(); //Kalman gain
-        Eigen::Matrix<double, 3,1> K_imu;
+        // Eigen::Matrix<double, 3,1> K_imu;
+        Eigen::Matrix<double, 3,1> K_gyro;
 
 
         // Camera measurement noise covariance
         Eigen::Matrix2d S_obs_cam; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
 
         // Camera measurement noise covariance
-        double S_obs_imu; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
+        // double S_obs_imu; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
+        double S_obs_gyro; // = Eigen::Matrix2d::Zero(); //measurement noise covariance
 
 
 };

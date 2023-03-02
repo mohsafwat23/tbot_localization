@@ -13,10 +13,12 @@ EKF::EKF()
     Q = (Eigen::Matrix2d() << 0.1*0.1,0.0,0.0,0.1*0.1).finished();
 
     // Camera Measurement Noise Covariance
-    R_cam = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.1*0.1).finished();
+    R_cam = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.8*0.8).finished();
 
     // Gyro Noise Covariance
-    R_imu = 0.005;
+    // R_imu = 0.005;
+    R_gyro = 0.005;
+
 
     I = Eigen::Matrix3d::Identity();
 }
@@ -71,6 +73,9 @@ void EKF::updateCam(std::vector<double> landmark, const double dist, const doubl
     J_H <<  (state(0)-landmark[0])/measurement_hat(0), (state(1)- landmark[1])/measurement_hat(0), 0.0,
             (-state(1)+landmark[1])/pow(measurement_hat(0),2),             (state(0)-landmark[0])/pow(measurement_hat(0),2),              -1.0;
 
+
+    // Covariance increases the further you are from the april tag
+    R_cam << measurement_hat(0)*0.05, 0.0, 0.0, measurement_hat(0)*0.1;
     //measurement noise covariance
     S_obs_cam = J_H*sigma*J_H.transpose() + R_cam;
 
@@ -85,26 +90,48 @@ void EKF::updateCam(std::vector<double> landmark, const double dist, const doubl
 
 }
 
-void EKF::updateIMU()
+// void EKF::updateIMU()
+// {
+//     // Measurement Model:
+//     // [theta] = [0 0 1]*[x y theta]^T
+
+//     H_imu << 0.0, 0.0, 1.0;
+    
+
+//     //measurement noise covariance: CHECK THIS
+//     S_obs_imu = H_imu*sigma*H_imu.transpose() + R_imu;
+
+
+//     // Kalman gain
+//     K_imu = sigma*H_imu.transpose()*(1/S_obs_imu);
+
+//     //update state
+//     state = state + K_imu*(theta_imu - (H_imu*state)(0));
+
+//     //update covarance
+//     sigma = (I - K_imu*H_imu)*sigma;
+// }
+
+void EKF::updateGyro(const double dt_loop)
 {
     // Measurement Model:
-    // [theta] = [0 0 1]*[x y theta]^T
+    // [theta] = [0 0 dt]*[x y theta]^T
 
-    H_imu << 0.0, 0.0, 1.0;
+    H_gyro << 0.0, 0.0, dt_loop;
     
 
     //measurement noise covariance: CHECK THIS
-    S_obs_imu = H_imu*sigma*H_imu.transpose() + R_imu;
+    S_obs_gyro = H_gyro*sigma*H_gyro.transpose() + R_gyro;
 
 
     // Kalman gain
-    K_imu = sigma*H_imu.transpose()*(1/S_obs_imu);
+    K_gyro = sigma*H_gyro.transpose()*(1/S_obs_gyro);
 
     //update state
-    state = state + K_imu*(theta_imu - (H_imu*state)(0));
+    state = state + K_gyro*(theta_imu - (H_gyro*state)(0));
 
     //update covarance
-    sigma = (I - K_imu*H_imu)*sigma;
+    sigma = (I - K_gyro*H_gyro)*sigma;
 }
 
 

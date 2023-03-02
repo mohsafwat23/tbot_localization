@@ -5,11 +5,13 @@ EKF_Node::EKF_Node(ros::NodeHandle *nh)
 {
     EKF();
     
-    odom_subscriber = nh->subscribe("/odom", 10, &EKF_Node::odom_callback, this);
+    odom_subscriber = nh->subscribe("/odom", 2, &EKF_Node::odom_callback, this);
 
-    imu_subscriber = nh->subscribe("/imu", 10, &EKF_Node::imu_callback, this);
+    // imu_subscriber = nh->subscribe("/imu", 10, &EKF_Node::imu_callback, this);
+    gyro_subscriber = nh->subscribe("/imu", 2, &EKF_Node::gyro_callback, this);
 
-    cam_subscriber = nh->subscribe("/cam_data", 10, &EKF_Node::cam_callback, this);
+
+    cam_subscriber = nh->subscribe("/cam_data", 2, &EKF_Node::cam_callback, this);
 
     
 };
@@ -21,15 +23,25 @@ void EKF_Node::odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
     odom_rob(1) = msg->twist.twist.angular.z;
 }
 
-void EKF_Node::imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
-{
-    // Robot pose
-    double qx = msg->orientation.x;
-    double qy = msg->orientation.y;
-    double qz = msg->orientation.z;
-    double qw = msg->orientation.w;
+// void EKF_Node::imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
+// {
+//     // Robot pose
+//     double qx = msg->orientation.x;
+//     double qy = msg->orientation.y;
+//     double qz = msg->orientation.z;
+//     double qw = msg->orientation.w;
 
-    theta_imu = atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz));
+//     theta_imu = atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz));
+//     // std::cout << theta_imu << "\n";
+
+//     // tnowIMU = double(msg->header.stamp.sec) + double(msg->header.stamp.nsec)*1e-9;
+
+// }
+
+void EKF_Node::gyro_callback(const sensor_msgs::Imu::ConstPtr& msg)
+{
+
+    theta_imu = msg->angular_velocity.z;
     // std::cout << theta_imu << "\n";
 
     // tnowIMU = double(msg->header.stamp.sec) + double(msg->header.stamp.nsec)*1e-9;
@@ -86,7 +98,6 @@ int main(int argc, char **argv)
     {
         tf2::Quaternion quat;
 
-        ros::spinOnce();
         ekfN.predict(1.0/30.0);
         //ekfN.updateIMU();
         
@@ -111,6 +122,8 @@ int main(int argc, char **argv)
             }
         
         }
+
+        ekfN.updateGyro(1.0/30.0);
 
         quat.setRPY(0.0, 0.0, ekfN.getState()(2));
         quat = quat.normalize();
@@ -139,6 +152,7 @@ int main(int argc, char **argv)
   
         // std::cout << ekfN.getState() << "\n";
         r.sleep();
+        ros::spinOnce();
     }
 
 

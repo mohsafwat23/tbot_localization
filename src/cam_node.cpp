@@ -58,8 +58,8 @@ void Cam_Node::img_raw_callback(const sensor_msgs::Image::ConstPtr& msg)
             float dist = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
             float angle = std::atan2(y, x);
 
-            std::cout << dist << "/n";
-            
+            // std::cout << dist << "/n";
+
             vec[W*i] = id;
             vec[W*i + 1] = dist;
             vec[W*i + 2] = angle;

@@ -11,7 +11,7 @@ EKF_Node::EKF_Node(ros::NodeHandle *nh)
     gyro_subscriber = nh->subscribe("/imu", 2, &EKF_Node::gyro_callback, this);
 
 
-    cam_subscriber = nh->subscribe("/cam_data", 2, &EKF_Node::cam_callback, this);
+    cam_subscriber = nh->subscribe("/cam_data", 10, &EKF_Node::cam_callback, this);
 
     
 };
@@ -94,11 +94,20 @@ int main(int argc, char **argv)
 
     visualization_msgs::Marker pose_marker;
 
+    double tnow;
+    double tprev = double(ros::Time::now().sec) + double(ros::Time::now().nsec)*1e-9;
+
     while(ros::ok())
     {
         tf2::Quaternion quat;
 
-        ekfN.predict(1.0/30.0);
+        double tnow = double(ros::Time::now().sec) + double(ros::Time::now().nsec)*1e-9;
+        //std::cout << "tnow: "<< tnow - tprev << "\n";
+        ekfN.predict(tnow - tprev);
+
+        ekfN.updateGyro(tnow - tprev);
+
+        tprev = tnow;
         //ekfN.updateIMU();
         
         //check if camera data is coming
@@ -123,7 +132,6 @@ int main(int argc, char **argv)
         
         }
 
-        ekfN.updateGyro(1.0/30.0);
 
         quat.setRPY(0.0, 0.0, ekfN.getState()(2));
         quat = quat.normalize();

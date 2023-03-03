@@ -10,7 +10,7 @@ EKF::EKF()
     //landmark = Eigen::Vector2d::Zero();
 
     // Process Noise Covariance Matrix
-    Q = (Eigen::Matrix2d() << 0.1*0.1,0.0,0.0,0.1*0.1).finished();
+    Q = (Eigen::Matrix2d() << 0.2*0.1,0.0,0.0,0.2*0.1).finished();
 
     // Camera Measurement Noise Covariance
     R_cam = (Eigen::Matrix2d() << 0.2*0.2,0.0,0.0,0.8*0.8).finished();

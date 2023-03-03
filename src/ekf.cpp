@@ -117,7 +117,7 @@ void EKF::updateGyro(const double dt_loop)
     // Measurement Model:
     // [theta] = [0 0 dt]*[x y theta]^T
 
-    H_gyro << 0.0, 0.0, dt_loop;
+    H_gyro << 0.0, 0.0, 1/dt_loop;
     
 
     //measurement noise covariance: CHECK THIS

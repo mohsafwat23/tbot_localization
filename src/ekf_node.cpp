@@ -105,7 +105,7 @@ int main(int argc, char **argv)
         //std::cout << "tnow: "<< tnow - tprev << "\n";
         ekfN.predict(tnow - tprev);
 
-        ekfN.updateGyro(tnow - tprev);
+        // ekfN.updateGyro(tnow - tprev);
 
         tprev = tnow;
         //ekfN.updateIMU();

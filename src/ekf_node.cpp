@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         }
     }
 
-    ros::Rate r(30.0);     // 100 hz
+    ros::Rate r(50.0);     // 100 hz
 
         
     int vec_size;

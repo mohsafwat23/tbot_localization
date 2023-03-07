@@ -20,7 +20,7 @@ void EKF_Node::odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
     //setOdom(msg->twist.twist.linear.x, msg->twist.twist.angular.z);
     odom_rob(0) = msg->twist.twist.linear.x;
-    odom_rob(1) = msg->twist.twist.angular.z;
+    //odom_rob(1) = msg->twist.twist.angular.z;
 }
 
 // void EKF_Node::imu_callback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -41,7 +41,8 @@ void EKF_Node::odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
 void EKF_Node::gyro_callback(const sensor_msgs::Imu::ConstPtr& msg)
 {
 
-    theta_imu = msg->angular_velocity.z;
+    //theta_imu = msg->angular_velocity.z;
+    odom_rob(1) = msg->angular_velocity.z;
     // std::cout << theta_imu << "\n";
 
     // tnowIMU = double(msg->header.stamp.sec) + double(msg->header.stamp.nsec)*1e-9;

@@ -111,26 +111,26 @@ int main(int argc, char **argv)
         //ekfN.updateIMU();
         
         //check if camera data is coming
-        if(ekfN.cam_recieved)
-        {
-            vec_size = ekfN.cam_data.size();
-        }
-        else{
-            vec_size = 0;
-        }
-        //check if the vector is valid and contains data
-        if(vec_size == ekfN.nlandmarks*ekfN.W && vec_size > 0){
-            //Eigen::Map<Eigen::MatrixXf> Landmarks(data.data(), nlandmarks, W);
-            Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> Landmarks(ekfN.cam_data.data(), ekfN.nlandmarks, ekfN.W);
-            //Loop over each observation
-            for(int i=0; i<ekfN.nlandmarks; i++)
-            {
-                int id_aruco = Landmarks(i,0);
-                ekfN.updateCam(lmP[id_aruco], Landmarks(i,1), Landmarks(i,2));
+        // if(ekfN.cam_recieved)
+        // {
+        //     vec_size = ekfN.cam_data.size();
+        // }
+        // else{
+        //     vec_size = 0;
+        // }
+        // //check if the vector is valid and contains data
+        // if(vec_size == ekfN.nlandmarks*ekfN.W && vec_size > 0){
+        //     //Eigen::Map<Eigen::MatrixXf> Landmarks(data.data(), nlandmarks, W);
+        //     Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>> Landmarks(ekfN.cam_data.data(), ekfN.nlandmarks, ekfN.W);
+        //     //Loop over each observation
+        //     for(int i=0; i<ekfN.nlandmarks; i++)
+        //     {
+        //         int id_aruco = Landmarks(i,0);
+        //         ekfN.updateCam(lmP[id_aruco], Landmarks(i,1), Landmarks(i,2));
 
-            }
+        //     }
         
-        }
+        // }
 
 
         quat.setRPY(0.0, 0.0, ekfN.getState()(2));

@@ -1,0 +1,15 @@
+<launch>
+    <machine
+            name="bot165"
+            address="192.168.0.165"
+            env-loader="/opt/ros/noetic/env.sh"
+            default="true"
+            user="ubuntu"
+            password="turtlebot"
+    />
+    <!-- <include file="$(find tbot_localization)/launch/ekf.launch" /> -->
+	<group ns="bot165">
+		<include file="$(find realsense2_camera)/launch/rs_camera.launch" />
+	</group> 
+	<!-- <include file="$(find turtlebot3_bringup)/launch/turtlebot3_robot.launch" /> -->
+</launch>

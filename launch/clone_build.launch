@@ -1,10 +1,17 @@
 <launch>
         <machine
-                name="bot165"
+                name="ubuntu"
                 address="192.168.0.165"
                 env-loader="/opt/ros/noetic/clone_build.sh"
                 default="true"
                 user="ubuntu"
                 password="turtlebot"
         />
+        <!-- <node machine="ubuntu" pkg="rosserial_python" type="serial_node.py" name="serial_node240">
+        	<param name="port"              type="string"               value="/dev/ttyACM0"/>
+        	<param name="baud"              type="int"                  value="500000"/>
+        </node> -->
+
+        <node machine="ubuntu" pkg="tbot_localization" type="cam_node" name="cam_node165">
+        </node>
 </launch>

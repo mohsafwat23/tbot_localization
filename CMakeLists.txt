@@ -159,6 +159,8 @@ install(
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+###############################################################################
+
 add_executable(cam_node 
                     src/cam_node.cpp)
 
@@ -167,6 +169,18 @@ target_link_libraries(cam_node ${catkin_LIBRARIES})
 install(
     TARGETS
     cam_node
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+###############################################################################
+add_executable(read_cam_node 
+                    src/read_cam_node.cpp)
+
+target_link_libraries(read_cam_node ${catkin_LIBRARIES})
+
+install(
+    TARGETS
+    read_cam_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 #add_dependencies(ekf_node {${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
